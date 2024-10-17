@@ -2,6 +2,17 @@
 
 Esta segunda iteración del proyecto web de **Go** implica un refactor completo siguiendo la filosofía de **Domain-Driven Design (DDD)**, que divide la arquitectura de la aplicación en tres dominios principales:
 
+## Ejecución
+
+Para ejecutar el proyecto, se utiliza un **Makefile** con diversos comandos para gestionar y manipular la aplicación. Para iniciar la aplicación, simplemente usa:
+
+```bash
+make run
+```
+
+## Dependencias
++ **Go** 1.23.1
+
 ### Estructura de Dominios
 
 - **cmd**: contiene los puntos de entrada de la aplicación y los handlers del servidor web.
