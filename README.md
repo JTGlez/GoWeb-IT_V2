@@ -10,16 +10,19 @@ Para ejecutar el proyecto, se utiliza un **Makefile** con diversos comandos para
 make run
 ```
 
-## Dependencias
-+ **Go** 1.23.1
+## 🚀 Dependencias
 
-### Estructura de Dominios
+Para ejecutar el proyecto, asegúrate de tener las siguientes herramientas instaladas en tu sistema:
+
+- **🐹 Go**: versión `> 1.23.1`
+
+## Estructura de Dominios
 
 - **cmd**: contiene los puntos de entrada de la aplicación y los handlers del servidor web.
 - **internal**: abarca los elementos internos de la aplicación que no deben exponerse, representando el core del sistema.
 - **pkg**: incluye los elementos reutilizables de la aplicación que pueden usarse de forma independiente.
 
-### Diseño en Capas
+## Diseño en Capas
 
 Para estructurar la arquitectura del servidor, se utiliza un **diseño en capas** que facilita el flujo de las peticiones según la entidad involucrada, siguiendo el siguiente esquema:
 
@@ -27,7 +30,7 @@ Para estructurar la arquitectura del servidor, se utiliza un **diseño en capas*
 - **Service**: capa de negocio que procesa datos, genera nuevas estructuras y gestiona recursos y llamadas externas, como APIs o microservicios.
 - **Repository**: capa de persistencia que abstrae el acceso a los datos, encargándose de su obtención y manipulación desde fuentes como archivos o bases de datos.
 
-### Esquema de Comunicación entre Capas
+## Esquema de Comunicación entre Capas
 
 La comunicación entre capas se implementa mediante **interfaces**, de modo que las llamadas no se realizan de forma directa, sino mediante un contrato que especifica cómo deben comunicarse las capas y qué métodos deben implementar. A continuación, se muestra un ejemplo gráfico de este esquema de comunicación entre capas:
 
