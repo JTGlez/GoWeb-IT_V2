@@ -14,7 +14,7 @@ make run
 
 Para ejecutar el proyecto, asegúrate de tener las siguientes herramientas instaladas en tu sistema:
 
-- **🐹 Go**: versión `> 1.23.1`
+- **🐹 Go**: `> 1.23.1`
 
 ## Estructura de Dominios
 
