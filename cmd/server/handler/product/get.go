@@ -52,3 +52,15 @@ func (s controllerProduct) GetProductsByPrice(w http.ResponseWriter, r *http.Req
 	count := len(products)
 	handler.SetResponse(w, http.StatusOK, products, true, nil, &count)
 }
+
+func (s controllerProduct) GetProductByCodeValue(w http.ResponseWriter, r *http.Request) {
+	codeValue := chi.URLParam(r, "code_value")
+
+	product, err := s.productSvc.GetProductByCodeValue(codeValue)
+	if err != nil {
+		handler.SetResponse(w, http.StatusNotFound, nil, false, err, nil)
+		return
+	}
+
+	handler.SetResponse(w, http.StatusOK, product, true, nil, nil)
+}

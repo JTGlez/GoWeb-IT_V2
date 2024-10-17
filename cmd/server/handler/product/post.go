@@ -26,7 +26,7 @@ func (s controllerProduct) CreateProduct(w http.ResponseWriter, r *http.Request)
 
 	dbProduct, errProduct := s.productSvc.CreateProduct(&product)
 	if errProduct != nil {
-		handler.SetResponse(w, http.StatusInternalServerError, nil, false, errProduct, nil)
+		handler.SetResponse(w, http.StatusConflict, nil, false, errProduct, nil)
 		return
 	}
 

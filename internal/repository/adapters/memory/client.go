@@ -23,15 +23,16 @@ type Data struct {
 	LastID    uint64
 }
 
+// getNextId is used to generate an incremental sequence of ids; just like OracleDB.
 func (d *Data) getNextId() uint64 {
 	d.LastID++
 	return d.LastID
 }
 
+// GetProducts returns every product inside the DB.
 func (d *Data) GetProducts() ([]*models.ProductResponse, error) {
 
 	var productsResponses []*models.ProductResponse
-
 	for _, product := range d.db {
 		productsResponses = append(productsResponses, &models.ProductResponse{
 			Name:        product.Name,
@@ -45,6 +46,7 @@ func (d *Data) GetProducts() ([]*models.ProductResponse, error) {
 	return productsResponses, nil
 }
 
+// GetProduct returns a product based on the ID provided.
 func (d *Data) GetProduct(id uint64) (*models.ProductResponse, error) {
 
 	product, exists := d.db[id]
@@ -62,7 +64,30 @@ func (d *Data) GetProduct(id uint64) (*models.ProductResponse, error) {
 	}
 
 	return productResponse, nil
+}
 
+func (d *Data) GetProductByCodeValue(codeValue string) (*models.ProductResponse, error) {
+
+	index, indexExists := d.CodeIndex[codeValue]
+	if !indexExists {
+		return nil, ErrorNonExistentRecord
+	}
+
+	product, exists := d.db[index]
+	if !exists {
+		return nil, ErrorNonExistentRecord
+	}
+
+	productResponse := &models.ProductResponse{
+		Name:        product.Name,
+		Quantity:    product.Quantity,
+		CodeValue:   product.CodeValue,
+		IsPublished: product.IsPublished,
+		Expiration:  product.Expiration,
+		Price:       product.Price,
+	}
+
+	return productResponse, nil
 }
 
 func (d *Data) CreateProduct(product *models.ProductResponse) (*models.ProductResponse, error) {

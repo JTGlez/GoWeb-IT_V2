@@ -18,6 +18,7 @@ type controllerProduct struct {
 type ControllerProductInterface interface {
 	GetProducts(w http.ResponseWriter, r *http.Request)
 	GetProductById(w http.ResponseWriter, r *http.Request)
+	GetProductByCodeValue(w http.ResponseWriter, r *http.Request)
 	GetProductsByPrice(w http.ResponseWriter, r *http.Request)
 	CreateProduct(w http.ResponseWriter, r *http.Request)
 }

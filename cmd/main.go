@@ -42,7 +42,8 @@ func main() {
 	})
 	rt.Route("/products", func(r chi.Router) {
 		r.Get("/", productController.GetProducts)
-		r.Get("/{id}", productController.GetProductById)
+		r.Get("/by-id/{id}", productController.GetProductById)
+		r.Get("/by-code/{code_value}", productController.GetProductByCodeValue)
 		r.Get("/search", productController.GetProductsByPrice)
 		r.Post("/", productController.CreateProduct)
 	})

@@ -24,6 +24,7 @@ func NewServiceProduct(repo repository.DataInterface) ServiceProductInterface {
 type ServiceProductInterface interface {
 	GetProducts() ([]*models.ProductResponse, error)
 	GetProduct(id uint64) (*models.ProductResponse, error)
+	GetProductByCodeValue(codeValue string) (*models.ProductResponse, error)
 	GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, error)
 	CreateProduct(product *models.ProductResponse) (*models.ProductResponse, error)
 }
@@ -34,6 +35,15 @@ func (s serviceProduct) GetProducts() ([]*models.ProductResponse, error) {
 
 func (s serviceProduct) GetProduct(id uint64) (*models.ProductResponse, error) {
 	return s.repo.GetProduct(id)
+}
+
+func (s serviceProduct) GetProductByCodeValue(codeValue string) (*models.ProductResponse, error) {
+	product, err := s.repo.GetProductByCodeValue(codeValue)
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }
 
 func (s serviceProduct) GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, error) {
