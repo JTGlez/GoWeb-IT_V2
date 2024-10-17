@@ -1,21 +1,32 @@
 # GoWeb-IT_V2
 
-Esta segunda iteración del proyecto web de Go involucra un refactor completo del proyecto siguiendo la filosofía *Domain-Driven Design* que divide la arquitectura de la aplicación en 3 dominios principales:
-+ **cmd**: dominio que abarca los entrypoints de la aplicación y los handlers del servidor web. 
-+ **internal**: dominio que incluye todos aquellos elementos internos a la aplicación que no se desean exponer al exterior y que representan el core de la misma.
-+ **pkg**: dominio que incluye aquellos elementos reusables de la aplicación y que pueden ser usados de forma aislada a la aplicación.
+Esta segunda iteración del proyecto web de **Go** implica un refactor completo siguiendo la filosofía de **Domain-Driven Design (DDD)**, que divide la arquitectura de la aplicación en tres dominios principales:
 
-A su vez, para estructurar la arquitectura del servidor se emplea un diseño en capas, donde el flujo de las peticiones según la entidad involucrada emplea el siguiente esquema:
+### Estructura de Dominios
 
-+ **Controller**: capa de entrada que recibe peticiones del cliente, valida que los datos de entrada cumplan criterios iniciales de aceptación y devuelve respuestas.
-+ **Service**: capa de negocio que procesa datos, genera nuevas estructuras y maneja recursos y/o llamadas externas, como APIs o microservicios dentro de la red interna.
-+ **Repository**: capa de persistencia que abstrae el acceso a los datos y se encarga de obtenerlos y/o manipularlos de una fuente de datos (archivos, bases de datos, etc).
+- **cmd**: contiene los puntos de entrada de la aplicación y los handlers del servidor web.
+- **internal**: abarca los elementos internos de la aplicación que no deben exponerse, representando el core del sistema.
+- **pkg**: incluye los elementos reutilizables de la aplicación que pueden usarse de forma independiente.
 
-El esquema de comunicaciones entre capas se implementa por medio de interfaces, de modo que las llamadas no se realizan de forma directa, si no por medio de un contrato que controla cómo deben comunicarse cada una de las capas y qué metodos deben implementar para ello. Esto se ve reflejado con el siguiente ejemplo, que muestra gráficamente cómo se realiza la comunicación entre capas:
+### Diseño en Capas
+
+Para estructurar la arquitectura del servidor, se utiliza un **diseño en capas** que facilita el flujo de las peticiones según la entidad involucrada, siguiendo el siguiente esquema:
+
+- **Controller**: capa de entrada que recibe las peticiones del cliente, valida los datos de entrada para que cumplan los criterios de aceptación y devuelve respuestas.
+- **Service**: capa de negocio que procesa datos, genera nuevas estructuras y gestiona recursos y llamadas externas, como APIs o microservicios.
+- **Repository**: capa de persistencia que abstrae el acceso a los datos, encargándose de su obtención y manipulación desde fuentes como archivos o bases de datos.
+
+### Esquema de Comunicación entre Capas
+
+La comunicación entre capas se implementa mediante **interfaces**, de modo que las llamadas no se realizan de forma directa, sino mediante un contrato que especifica cómo deben comunicarse las capas y qué métodos deben implementar. A continuación, se muestra un ejemplo gráfico de este esquema de comunicación entre capas:
 
 ![image](https://github.com/user-attachments/assets/6a48fe1a-980e-44dc-9ddc-e4357f9c5df2)
 
-+ Los servicios se crean mediante factories, que devuelven interfaces a partir de structs que implementen la firma de la interfaz a devolver. 
-+ + En este esquema, el router atrapa la petición GET y llama al servicio svcPong, que es una InterfacePong, e invoca el método GetPong. Se resalta que en ningún momento se está llamando directamente a un struct, si no que al crear el servicio se está devolviendo un struct wrappeado sobre la interfaz.
-+ Finalmente, por medio de la llamada a la firma de la interfaz, se invoca a la implementación propia de GetPong por parte del struct pongService que, a su vez, es una InterfacePong.
-  
+### Creación de Servicios mediante Factories
+
+- Los servicios se generan a través de **factories**, que devuelven interfaces a partir de **structs** que implementan la firma de la interfaz.
+    - En este esquema, el **router** captura la petición `GET` y llama al servicio `svcPong`, que es una instancia de **InterfacePong**. Este servicio invoca el método `GetPong`.
+    - Cabe destacar que, en ningún momento, se llama directamente a un `struct`; en su lugar, se devuelve un `struct` envuelto en la interfaz al crear el servicio.
+
+Finalmente, mediante la firma de la interfaz, se invoca la implementación específica de `GetPong` en el **struct InterfacePong**, cumpliendo así el contrato de la **InterfacePong**.
+
