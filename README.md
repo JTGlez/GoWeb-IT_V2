@@ -28,5 +28,5 @@ La comunicación entre capas se implementa mediante **interfaces**, de modo que 
     - En este esquema, el **router** captura la petición `GET` y llama al servicio `svcPong`, que es una instancia de **InterfacePong**. Este servicio invoca el método `GetPong`.
     - Cabe destacar que, en ningún momento, se llama directamente a un `struct`; en su lugar, se devuelve un `struct` envuelto en la interfaz al crear el servicio.
 
-Finalmente, mediante la firma de la interfaz, se invoca la implementación específica de `GetPong` en el **struct InterfacePong**, cumpliendo así el contrato de la **InterfacePong**.
+Finalmente, mediante la firma de la interfaz, se invoca la implementación específica de `GetPong` en el **struct pongService**, cumpliendo así el contrato de la **InterfacePong**.
 
