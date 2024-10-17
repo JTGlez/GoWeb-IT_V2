@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/JTGlez/GoWeb-IT_V2/cmd/server/handler/ping"
+	"github.com/JTGlez/GoWeb-IT_V2/cmd/server/handler/product"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -24,10 +25,14 @@ func main() {
 
 	// Service handlers
 	svcPong := ping.NewHandler()
+	svcProduct := product.NewHandler()
 
 	// Routes
 	rt.Route("/ping", func(r chi.Router) {
 		r.Get("/", svcPong.GetPong)
+	})
+	rt.Route("/products", func(r chi.Router) {
+		r.Get("/", svcProduct.GetProducts)
 	})
 
 	// Server configs
