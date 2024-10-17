@@ -12,7 +12,8 @@ import (
 )
 
 var (
-	ErrorDuplicatedRecord = errors.New("record already exists on DB")
+	ErrorDuplicatedRecord  = errors.New("record already exists on DB")
+	ErrorNonExistentRecord = errors.New("record doesn't exist on DB")
 )
 
 type Data struct {
@@ -36,6 +37,26 @@ func (d Data) GetProducts() ([]*models.ProductResponse, error) {
 		})
 	}
 	return productsResponses, nil
+}
+
+func (d Data) GetProductById(id int) (*models.ProductResponse, error) {
+
+	product, exists := d.db[id]
+	if !exists {
+		return nil, ErrorNonExistentRecord
+	}
+
+	productResponse := &models.ProductResponse{
+		Name:        product.Name,
+		Quantity:    product.Quantity,
+		CodeValue:   product.CodeValue,
+		IsPublished: product.IsPublished,
+		Expiration:  product.Expiration,
+		Price:       product.Price,
+	}
+
+	return productResponse, nil
+
 }
 
 func LoadProducts(filePath string, data *Data) error {

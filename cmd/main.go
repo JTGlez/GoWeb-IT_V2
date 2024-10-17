@@ -40,6 +40,7 @@ func main() {
 	})
 	rt.Route("/products", func(r chi.Router) {
 		r.Get("/", svcProduct.GetProducts)
+		r.Get("/{id}", svcProduct.GetProductById)
 	})
 
 	// Server configs

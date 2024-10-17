@@ -11,4 +11,5 @@ var (
 
 type DataInterface interface {
 	GetProducts() ([]*models.ProductResponse, error)
+	GetProductById(id int) (*models.ProductResponse, error)
 }

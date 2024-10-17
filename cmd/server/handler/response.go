@@ -2,12 +2,17 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+)
+
+var (
+	ErrorInvalidID = errors.New("invalid id input")
 )
 
 type Response struct {
 	Success bool        `json:"success"`
-	Error   error       `json:"error"`
+	Error   string      `json:"error,omitempty"`
 	Count   *int        `json:"count,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
 }
@@ -19,9 +24,14 @@ func SetResponse(w http.ResponseWriter,
 	err error,
 	count *int) {
 
+	var errMsg string
+	if err != nil {
+		errMsg = err.Error()
+	}
+
 	r := Response{
 		Success: success,
-		Error:   err,
+		Error:   errMsg,
 		Count:   count,
 		Data:    data,
 	}
