@@ -22,8 +22,20 @@ type Data struct {
 }
 
 func (d Data) GetProducts() ([]*models.ProductResponse, error) {
-	//TODO implement me
-	panic("implement me")
+
+	var productsResponses []*models.ProductResponse
+
+	for _, product := range d.db {
+		productsResponses = append(productsResponses, &models.ProductResponse{
+			Name:        product.Name,
+			Quantity:    product.Quantity,
+			CodeValue:   product.CodeValue,
+			IsPublished: product.IsPublished,
+			Expiration:  product.Expiration,
+			Price:       product.Price,
+		})
+	}
+	return productsResponses, nil
 }
 
 func LoadProducts(filePath string, data *Data) error {
