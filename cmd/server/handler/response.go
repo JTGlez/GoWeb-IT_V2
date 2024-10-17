@@ -2,12 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
-)
-
-var (
-	ErrorInvalidID = errors.New("invalid id input")
 )
 
 type Response struct {

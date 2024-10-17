@@ -20,7 +20,7 @@ func (s serviceProduct) GetProductById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	numId, err := strconv.Atoi(id)
 	if err != nil {
-		handler.SetResponse(w, http.StatusBadRequest, nil, false, handler.ErrorInvalidID, nil)
+		handler.SetResponse(w, http.StatusBadRequest, nil, false, ErrorInvalidID, nil)
 		return
 	}
 
@@ -32,4 +32,23 @@ func (s serviceProduct) GetProductById(w http.ResponseWriter, r *http.Request) {
 
 	handler.SetResponse(w, http.StatusOK, product, true, nil, nil)
 
+}
+
+func (s serviceProduct) GetProductsByPrice(w http.ResponseWriter, r *http.Request) {
+	priceGtStr := r.URL.Query().Get("priceGt")
+
+	priceGt, err := strconv.ParseFloat(priceGtStr, 64)
+	if err != nil {
+		handler.SetResponse(w, http.StatusBadRequest, nil, false, ErrorInvalidPrice, nil)
+		return
+	}
+
+	products, errProduct := s.db.GetProductsByPrice(priceGt)
+	if errProduct != nil {
+		handler.SetResponse(w, http.StatusNotFound, nil, false, errProduct, nil)
+		return
+	}
+
+	count := len(products)
+	handler.SetResponse(w, http.StatusOK, products, true, nil, &count)
 }
