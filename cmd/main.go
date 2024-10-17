@@ -4,6 +4,7 @@ import (
 	"github.com/JTGlez/GoWeb-IT_V2/cmd/server/handler/ping"
 	"github.com/JTGlez/GoWeb-IT_V2/cmd/server/handler/product"
 	"github.com/JTGlez/GoWeb-IT_V2/internal/repository/adapters"
+	serviceProduct "github.com/JTGlez/GoWeb-IT_V2/internal/services/product"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -27,22 +28,23 @@ func main() {
 	// DB Init
 	db, err := adapters.NewRepository()
 	if err != nil {
-		log.Fatalf("could not load repository from the adapter")
+		log.Fatalf("could not load repository from the adapter: %s", err.Error())
 	}
 
-	// Service handlers
-	svcPong := ping.NewHandler()
-	svcProduct := product.NewHandler(db)
+	// Controller, services and repos
+	pongHandler := ping.NewHandler()
+	productService := serviceProduct.NewServiceProduct(db)
+	productController := product.NewController(productService)
 
 	// Routes
 	rt.Route("/ping", func(r chi.Router) {
-		r.Get("/", svcPong.GetPong)
+		r.Get("/", pongHandler.GetPong)
 	})
 	rt.Route("/products", func(r chi.Router) {
-		r.Get("/", svcProduct.GetProducts)
-		r.Get("/{id}", svcProduct.GetProductById)
-		r.Get("/search", svcProduct.GetProductsByPrice)
-		r.Post("/", svcProduct.CreateProduct)
+		r.Get("/", productController.GetProducts)
+		r.Get("/{id}", productController.GetProductById)
+		r.Get("/search", productController.GetProductsByPrice)
+		r.Post("/", productController.CreateProduct)
 	})
 
 	// Server configs

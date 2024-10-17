@@ -7,8 +7,8 @@ import (
 	"strconv"
 )
 
-func (s serviceProduct) GetProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := s.db.GetProducts()
+func (s controllerProduct) GetProducts(w http.ResponseWriter, r *http.Request) {
+	products, err := s.productSvc.GetProducts()
 	if err != nil {
 		handler.SetResponse(w, http.StatusInternalServerError, nil, false, err, nil)
 	}
@@ -16,7 +16,7 @@ func (s serviceProduct) GetProducts(w http.ResponseWriter, r *http.Request) {
 	handler.SetResponse(w, http.StatusOK, products, true, nil, &count)
 }
 
-func (s serviceProduct) GetProductById(w http.ResponseWriter, r *http.Request) {
+func (s controllerProduct) GetProductById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	numId, err := strconv.Atoi(id)
 	if err != nil {
@@ -24,7 +24,7 @@ func (s serviceProduct) GetProductById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product, errProduct := s.db.GetProductById(numId)
+	product, errProduct := s.productSvc.GetProduct(uint64(numId))
 	if errProduct != nil {
 		handler.SetResponse(w, http.StatusNotFound, nil, false, errProduct, nil)
 		return
@@ -34,7 +34,7 @@ func (s serviceProduct) GetProductById(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s serviceProduct) GetProductsByPrice(w http.ResponseWriter, r *http.Request) {
+func (s controllerProduct) GetProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	priceGtStr := r.URL.Query().Get("priceGt")
 
 	priceGt, err := strconv.ParseFloat(priceGtStr, 64)
@@ -43,7 +43,7 @@ func (s serviceProduct) GetProductsByPrice(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	products, errProduct := s.db.GetProductsByPrice(priceGt)
+	products, errProduct := s.productSvc.GetProductsByPrice(priceGt)
 	if errProduct != nil {
 		handler.SetResponse(w, http.StatusNotFound, nil, false, errProduct, nil)
 		return

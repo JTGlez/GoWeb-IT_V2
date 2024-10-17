@@ -15,16 +15,15 @@ import (
 var (
 	ErrorRecordExists      = errors.New("record already exists on DB")
 	ErrorNonExistentRecord = errors.New("record doesn't exist on DB")
-	ErrorNotCoincidences   = errors.New("no coincidences found for the desired priceGt target")
 )
 
 type Data struct {
-	db        map[int]*models.Product
-	CodeIndex map[string]int
-	LastID    int
+	db        map[uint64]*models.Product
+	CodeIndex map[string]uint64
+	LastID    uint64
 }
 
-func (d *Data) getNextId() int {
+func (d *Data) getNextId() uint64 {
 	d.LastID++
 	return d.LastID
 }
@@ -46,7 +45,7 @@ func (d *Data) GetProducts() ([]*models.ProductResponse, error) {
 	return productsResponses, nil
 }
 
-func (d *Data) GetProductById(id int) (*models.ProductResponse, error) {
+func (d *Data) GetProduct(id uint64) (*models.ProductResponse, error) {
 
 	product, exists := d.db[id]
 	if !exists {
@@ -64,30 +63,6 @@ func (d *Data) GetProductById(id int) (*models.ProductResponse, error) {
 
 	return productResponse, nil
 
-}
-
-func (d *Data) GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, error) {
-
-	var productsResponse []*models.ProductResponse
-
-	for _, product := range d.db {
-		if product.Price > priceGt {
-			productsResponse = append(productsResponse, &models.ProductResponse{
-				Name:        product.Name,
-				Quantity:    product.Quantity,
-				CodeValue:   product.CodeValue,
-				IsPublished: product.IsPublished,
-				Expiration:  product.Expiration,
-				Price:       product.Price,
-			})
-		}
-	}
-
-	if len(productsResponse) == 0 {
-		return nil, ErrorNotCoincidences
-	}
-
-	return productsResponse, nil
 }
 
 func (d *Data) CreateProduct(product *models.ProductResponse) (*models.ProductResponse, error) {
@@ -168,8 +143,8 @@ func LoadProducts(filePath string, data *Data) error {
 func NewDatabase() repository.DataInterface {
 	filePath := os.Getenv("FILEPATH")
 	log.Println("Loading In-Memory DB from:", filePath)
-	db := make(map[int]*models.Product)
-	codeIndex := make(map[string]int)
+	db := make(map[uint64]*models.Product)
+	codeIndex := make(map[string]uint64)
 	data := &Data{
 		db:        db,
 		CodeIndex: codeIndex,

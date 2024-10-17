@@ -10,8 +10,9 @@ import (
 
 var validate = validator.New()
 
-func (s serviceProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
+func (s controllerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
+	// TODO: To be more concise, maybe will be refactored as a raw request
 	var product models.ProductResponse
 	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
 		handler.SetResponse(w, http.StatusBadRequest, nil, false, err, nil)
@@ -23,7 +24,7 @@ func (s serviceProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbProduct, errProduct := s.db.CreateProduct(&product)
+	dbProduct, errProduct := s.productSvc.CreateProduct(&product)
 	if errProduct != nil {
 		handler.SetResponse(w, http.StatusInternalServerError, nil, false, errProduct, nil)
 		return

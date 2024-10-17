@@ -2,7 +2,7 @@ package product
 
 import (
 	"errors"
-	"github.com/JTGlez/GoWeb-IT_V2/internal/repository"
+	"github.com/JTGlez/GoWeb-IT_V2/internal/services/product"
 	"net/http"
 )
 
@@ -11,19 +11,20 @@ var (
 	ErrorInvalidPrice = errors.New("invalid priceGt param")
 )
 
-type serviceProduct struct {
-	db repository.DataInterface
+type controllerProduct struct {
+	productSvc product.ServiceProductInterface
 }
 
-type InterfaceProduct interface {
+type ControllerProductInterface interface {
 	GetProducts(w http.ResponseWriter, r *http.Request)
 	GetProductById(w http.ResponseWriter, r *http.Request)
 	GetProductsByPrice(w http.ResponseWriter, r *http.Request)
 	CreateProduct(w http.ResponseWriter, r *http.Request)
 }
 
-func NewHandler(db repository.DataInterface) InterfaceProduct {
-	return &serviceProduct{
-		db: db,
+func NewController(
+	productSvc product.ServiceProductInterface) ControllerProductInterface {
+	return &controllerProduct{
+		productSvc: productSvc,
 	}
 }

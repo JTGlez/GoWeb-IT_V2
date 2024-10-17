@@ -3,7 +3,7 @@ package models
 import "encoding/json"
 
 type RawProduct struct {
-	ID          int     `json:"ID"`
+	ID          uint64  `json:"ID"`
 	Name        string  `json:"name"`
 	Quantity    int     `json:"quantity"`
 	CodeValue   string  `json:"code_value"`
@@ -13,7 +13,7 @@ type RawProduct struct {
 }
 
 type Product struct {
-	ID          int            `json:"ID" validate:"required"`
+	ID          uint64         `json:"ID" validate:"required"`
 	Name        string         `json:"name"`
 	Quantity    int            `json:"quantity,omitempty"`
 	CodeValue   string         `json:"code_value"`
