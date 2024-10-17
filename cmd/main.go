@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/JTGlez/GoWeb-IT_V2/cmd/server/handler/ping"
 	"github.com/JTGlez/GoWeb-IT_V2/cmd/server/handler/product"
+	"github.com/JTGlez/GoWeb-IT_V2/internal/repository/adapters"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -23,9 +24,15 @@ func main() {
 	rt.Use(middleware.Logger)
 	rt.Use(middleware.Recoverer)
 
+	// DB Init
+	db, err := adapters.NewRepository()
+	if err != nil {
+		log.Fatalf("could not load repository from the adapter")
+	}
+
 	// Service handlers
 	svcPong := ping.NewHandler()
-	svcProduct := product.NewHandler()
+	svcProduct := product.NewHandler(db)
 
 	// Routes
 	rt.Route("/ping", func(r chi.Router) {
