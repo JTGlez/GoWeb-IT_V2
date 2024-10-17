@@ -12,7 +12,7 @@ var validate = validator.New()
 
 func (s controllerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
-	// TODO: To be more concise, maybe will be refactored as a raw request
+	// * We use ProductResponse to cast and check in one step all the required fields
 	var product models.ProductResponse
 	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
 		handler.SetResponse(w, http.StatusBadRequest, nil, false, err, nil)

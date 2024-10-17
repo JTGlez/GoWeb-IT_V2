@@ -106,26 +106,20 @@ func LoadProducts(filePath string, data *Data) error {
 		return fmt.Errorf("could not read file: %v", err)
 	}
 
-	var rawProducts []*models.RawProduct
+	var rawProducts []*models.Product
 
 	if err := json.Unmarshal(fileData, &rawProducts); err != nil {
 		return fmt.Errorf("could not unmarshal JSON: %v", err)
 	}
 
 	for _, rawProduct := range rawProducts {
-		expiration, err := models.NewExpirationDate(rawProduct.Expiration)
-		if err != nil {
-			log.Printf("Invalid expiration date for product %s: %v", rawProduct.Name, err)
-			continue
-		}
-
 		product := &models.Product{
 			ID:          rawProduct.ID,
 			Name:        rawProduct.Name,
 			Quantity:    rawProduct.Quantity,
 			CodeValue:   rawProduct.CodeValue,
 			IsPublished: rawProduct.IsPublished,
-			Expiration:  *expiration,
+			Expiration:  rawProduct.Expiration,
 			Price:       rawProduct.Price,
 		}
 
