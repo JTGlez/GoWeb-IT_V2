@@ -19,6 +19,7 @@ type InterfaceProduct interface {
 	GetProducts(w http.ResponseWriter, r *http.Request)
 	GetProductById(w http.ResponseWriter, r *http.Request)
 	GetProductsByPrice(w http.ResponseWriter, r *http.Request)
+	CreateProduct(w http.ResponseWriter, r *http.Request)
 }
 
 func NewHandler(db repository.DataInterface) InterfaceProduct {

@@ -4,15 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/JTGlez/GoWeb-IT_V2/internal/models"
-	"github.com/JTGlez/GoWeb-IT_V2/internal/repository"
 	"io"
 	"log"
 	"os"
+
+	"github.com/JTGlez/GoWeb-IT_V2/internal/models"
+	"github.com/JTGlez/GoWeb-IT_V2/internal/repository"
 )
 
 var (
-	ErrorDuplicatedRecord  = errors.New("record already exists on DB")
+	ErrorRecordExists      = errors.New("record already exists on DB")
 	ErrorNonExistentRecord = errors.New("record doesn't exist on DB")
 	ErrorNotCoincidences   = errors.New("no coincidences found for the desired priceGt target")
 )
@@ -23,7 +24,12 @@ type Data struct {
 	LastID    int
 }
 
-func (d Data) GetProducts() ([]*models.ProductResponse, error) {
+func (d *Data) getNextId() int {
+	d.LastID++
+	return d.LastID
+}
+
+func (d *Data) GetProducts() ([]*models.ProductResponse, error) {
 
 	var productsResponses []*models.ProductResponse
 
@@ -40,7 +46,7 @@ func (d Data) GetProducts() ([]*models.ProductResponse, error) {
 	return productsResponses, nil
 }
 
-func (d Data) GetProductById(id int) (*models.ProductResponse, error) {
+func (d *Data) GetProductById(id int) (*models.ProductResponse, error) {
 
 	product, exists := d.db[id]
 	if !exists {
@@ -60,7 +66,7 @@ func (d Data) GetProductById(id int) (*models.ProductResponse, error) {
 
 }
 
-func (d Data) GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, error) {
+func (d *Data) GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, error) {
 
 	var productsResponse []*models.ProductResponse
 
@@ -84,6 +90,30 @@ func (d Data) GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, er
 	return productsResponse, nil
 }
 
+func (d *Data) CreateProduct(product *models.ProductResponse) (*models.ProductResponse, error) {
+
+	_, exists := d.CodeIndex[product.CodeValue]
+	if exists {
+		return nil, ErrorRecordExists
+	}
+
+	nextId := d.getNextId()
+	newProduct := &models.Product{
+		ID:          nextId,
+		Name:        product.Name,
+		Quantity:    product.Quantity,
+		CodeValue:   product.CodeValue,
+		IsPublished: product.IsPublished,
+		Expiration:  product.Expiration,
+		Price:       product.Price,
+	}
+
+	d.db[nextId] = newProduct
+	d.CodeIndex[newProduct.CodeValue] = newProduct.ID
+
+	return product, nil
+}
+
 func LoadProducts(filePath string, data *Data) error {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -101,19 +131,37 @@ func LoadProducts(filePath string, data *Data) error {
 		return fmt.Errorf("could not read file: %v", err)
 	}
 
-	var products []models.Product
-	if err := json.Unmarshal(fileData, &products); err != nil {
+	var rawProducts []*models.RawProduct
+
+	if err := json.Unmarshal(fileData, &rawProducts); err != nil {
 		return fmt.Errorf("could not unmarshal JSON: %v", err)
 	}
 
-	data.LastID = len(products)
-	for _, product := range products {
-		data.db[product.ID] = &product
+	for _, rawProduct := range rawProducts {
+		expiration, err := models.NewExpirationDate(rawProduct.Expiration)
+		if err != nil {
+			log.Printf("Invalid expiration date for product %s: %v", rawProduct.Name, err)
+			continue
+		}
+
+		product := &models.Product{
+			ID:          rawProduct.ID,
+			Name:        rawProduct.Name,
+			Quantity:    rawProduct.Quantity,
+			CodeValue:   rawProduct.CodeValue,
+			IsPublished: rawProduct.IsPublished,
+			Expiration:  *expiration,
+			Price:       rawProduct.Price,
+		}
+
+		data.db[product.ID] = product
 		data.CodeIndex[product.CodeValue] = product.ID
+		if product.ID > data.LastID {
+			data.LastID = product.ID
+		}
 	}
 
 	log.Printf("Value for lastID: %d", data.LastID)
-
 	return nil
 }
 

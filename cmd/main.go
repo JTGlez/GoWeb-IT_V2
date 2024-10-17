@@ -42,6 +42,7 @@ func main() {
 		r.Get("/", svcProduct.GetProducts)
 		r.Get("/{id}", svcProduct.GetProductById)
 		r.Get("/search", svcProduct.GetProductsByPrice)
+		r.Post("/", svcProduct.CreateProduct)
 	})
 
 	// Server configs
