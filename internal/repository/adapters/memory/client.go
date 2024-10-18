@@ -114,6 +114,43 @@ func (d *Data) CreateProduct(product *models.ProductResponse) (*models.ProductRe
 	return product, nil
 }
 
+func (d *Data) PutProduct(product *models.ProductResponse) (*models.ProductResponse, error) {
+
+	index, indexExists := d.CodeIndex[product.CodeValue]
+	if !indexExists {
+		return nil, ErrorNonExistentRecord
+	}
+
+	existingProduct, exists := d.db[index]
+	if !exists {
+		return nil, ErrorNonExistentRecord
+	}
+
+	if product.NewCodeValue != "" && product.NewCodeValue != existingProduct.CodeValue {
+		delete(d.CodeIndex, existingProduct.CodeValue)
+		d.CodeIndex[product.NewCodeValue] = existingProduct.ID
+		existingProduct.CodeValue = product.NewCodeValue
+	}
+
+	existingProduct.Name = product.Name
+	existingProduct.Quantity = product.Quantity
+	existingProduct.IsPublished = product.IsPublished
+	existingProduct.Expiration = product.Expiration
+	existingProduct.Price = product.Price
+	d.db[existingProduct.ID] = existingProduct
+
+	productResponse := &models.ProductResponse{
+		Name:        existingProduct.Name,
+		Quantity:    existingProduct.Quantity,
+		CodeValue:   existingProduct.CodeValue,
+		IsPublished: existingProduct.IsPublished,
+		Expiration:  existingProduct.Expiration,
+		Price:       existingProduct.Price,
+	}
+
+	return productResponse, nil
+}
+
 func LoadProducts(filePath string, data *Data) error {
 	file, err := os.Open(filePath)
 	if err != nil {

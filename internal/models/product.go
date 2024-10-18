@@ -15,12 +15,13 @@ type Product struct {
 
 // ProductResponse is a basic structure for product data sent to and received from the client.
 type ProductResponse struct {
-	Name        string         `json:"name" validate:"required"`
-	Quantity    int            `json:"quantity,omitempty" validate:"required"`
-	CodeValue   string         `json:"code_value" validate:"required"`
-	IsPublished bool           `json:"is_published"`
-	Expiration  ExpirationDate `json:"expiration" validate:"required"`
-	Price       float64        `json:"price" validate:"required"`
+	Name         string         `json:"name" validate:"required"`
+	Quantity     int            `json:"quantity,omitempty" validate:"required"`
+	CodeValue    string         `json:"code_value" validate:"required"`
+	NewCodeValue string         `json:"new_code_value,omitempty"`
+	IsPublished  bool           `json:"is_published"`
+	Expiration   ExpirationDate `json:"expiration" validate:"required"`
+	Price        float64        `json:"price" validate:"required"`
 }
 
 func (p Product) String() string {

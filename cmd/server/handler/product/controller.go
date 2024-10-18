@@ -21,6 +21,7 @@ type ControllerProductInterface interface {
 	GetProductByCodeValue(w http.ResponseWriter, r *http.Request)
 	GetProductsByPrice(w http.ResponseWriter, r *http.Request)
 	CreateProduct(w http.ResponseWriter, r *http.Request)
+	PutProduct(w http.ResponseWriter, r *http.Request)
 }
 
 func NewController(

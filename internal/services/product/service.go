@@ -27,6 +27,7 @@ type ServiceProductInterface interface {
 	GetProductByCodeValue(codeValue string) (*models.ProductResponse, error)
 	GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, error)
 	CreateProduct(product *models.ProductResponse) (*models.ProductResponse, error)
+	PutProduct(product *models.ProductResponse) (*models.ProductResponse, error)
 }
 
 func (s serviceProduct) GetProducts() ([]*models.ProductResponse, error) {
@@ -77,4 +78,12 @@ func (s serviceProduct) CreateProduct(product *models.ProductResponse) (*models.
 		return nil, err
 	}
 	return newProduct, nil
+}
+
+func (s serviceProduct) PutProduct(product *models.ProductResponse) (*models.ProductResponse, error) {
+	updatedProduct, err := s.repo.PutProduct(product)
+	if err != nil {
+		return nil, err
+	}
+	return updatedProduct, nil
 }

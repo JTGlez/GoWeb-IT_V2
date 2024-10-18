@@ -19,5 +19,4 @@ func main() {
 	if err := svr.Start(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
-
 }
