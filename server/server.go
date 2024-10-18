@@ -5,6 +5,7 @@ import (
 	"github.com/JTGlez/GoWeb-IT_V2/cmd/server/handler/product"
 	"github.com/JTGlez/GoWeb-IT_V2/internal/repository/adapters"
 	serviceProduct "github.com/JTGlez/GoWeb-IT_V2/internal/services/product"
+	middleware2 "github.com/JTGlez/GoWeb-IT_V2/server/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log"
@@ -55,10 +56,10 @@ func (s *Server) setupRoutes() {
 		r.Get("/by-id/{id}", productController.GetProductById)
 		r.Get("/by-code/{code_value}", productController.GetProductByCodeValue)
 		r.Get("/search", productController.GetProductsByPrice)
-		r.Post("/", productController.CreateProduct)
-		r.Put("/", productController.PutProduct)
-		r.Patch("/", productController.PatchProduct)
-		r.Delete("/{code_value}", productController.DeleteProduct)
+		r.With(middleware2.TokenAuthMiddleware).Post("/", productController.CreateProduct)
+		r.With(middleware2.TokenAuthMiddleware).Put("/", productController.PutProduct)
+		r.With(middleware2.TokenAuthMiddleware).Patch("/", productController.PatchProduct)
+		r.With(middleware2.TokenAuthMiddleware).Delete("/{code_value}", productController.DeleteProduct)
 	})
 }
 
