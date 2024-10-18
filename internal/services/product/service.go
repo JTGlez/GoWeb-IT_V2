@@ -30,6 +30,7 @@ type ServiceProductInterface interface {
 	CreateProduct(product *models.ProductResponse) (*models.ProductResponse, error)
 	PutProduct(product *models.ProductResponse) (*models.ProductResponse, error)
 	PatchProduct(product *models.ProductResponse) (*models.ProductResponse, error)
+	DeleteProduct(codeValue string) error
 }
 
 func (s serviceProduct) GetProducts() ([]*models.ProductResponse, error) {
@@ -90,7 +91,6 @@ func (s serviceProduct) PutProduct(product *models.ProductResponse) (*models.Pro
 	return updatedProduct, nil
 }
 
-// PatchProduct realiza la actualización parcial de un producto.
 func (s serviceProduct) PatchProduct(product *models.ProductResponse) (*models.ProductResponse, error) {
 	existingProduct, id, err := s.repo.GetFullProductByCodeValue(product.CodeValue)
 	if err != nil {
@@ -111,6 +111,10 @@ func (s serviceProduct) PatchProduct(product *models.ProductResponse) (*models.P
 	}
 
 	return updatedProduct, nil
+}
+
+func (s serviceProduct) DeleteProduct(codeValue string) error {
+	return s.repo.DeleteProduct(codeValue)
 }
 
 // mergeStructs actualiza los valores de dst con los de src si no son valores por defecto.

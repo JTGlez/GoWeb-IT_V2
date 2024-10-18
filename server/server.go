@@ -58,6 +58,7 @@ func (s *Server) setupRoutes() {
 		r.Post("/", productController.CreateProduct)
 		r.Put("/", productController.PutProduct)
 		r.Patch("/", productController.PatchProduct)
+		r.Delete("/{code_value}", productController.DeleteProduct)
 	})
 }
 

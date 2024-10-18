@@ -18,4 +18,5 @@ type DataInterface interface {
 	PutProduct(product *models.ProductResponse) (*models.ProductResponse, error)
 	PatchProduct(product *models.ProductResponse, id uint64) (*models.ProductResponse, error)
 	GetFullProductByCodeValue(codeValue string) (*models.ProductResponse, uint64, error)
+	DeleteProduct(codeValue string) error
 }

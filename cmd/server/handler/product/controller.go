@@ -24,6 +24,7 @@ type ControllerProductInterface interface {
 	CreateProduct(w http.ResponseWriter, r *http.Request)
 	PutProduct(w http.ResponseWriter, r *http.Request)
 	PatchProduct(w http.ResponseWriter, r *http.Request)
+	DeleteProduct(w http.ResponseWriter, r *http.Request)
 }
 
 func NewController(

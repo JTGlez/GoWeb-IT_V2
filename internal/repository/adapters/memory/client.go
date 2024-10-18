@@ -210,6 +210,24 @@ func (d *Data) PatchProduct(product *models.ProductResponse, id uint64) (*models
 	return productResponse, nil
 }
 
+func (d *Data) DeleteProduct(codeValue string) error {
+	index, indexExists := d.CodeIndex[codeValue]
+	if !indexExists {
+		return ErrorNonExistentRecord
+	}
+
+	existingProduct, exists := d.db[index]
+	if !exists {
+		return ErrorNonExistentRecord
+	}
+
+	log.Printf("Deleting product with ID: %d, CodeValue: %s", index, existingProduct.CodeValue)
+	delete(d.CodeIndex, existingProduct.CodeValue)
+	delete(d.db, index)
+
+	return nil
+}
+
 func LoadProducts(filePath string, data *Data) error {
 	file, err := os.Open(filePath)
 	if err != nil {
