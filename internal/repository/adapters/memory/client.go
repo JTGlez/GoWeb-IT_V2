@@ -23,6 +23,30 @@ type Data struct {
 	LastID    uint64
 }
 
+// GetFullProductByCodeValue returns the full product and its ID by CodeValue.
+func (d *Data) GetFullProductByCodeValue(codeValue string) (*models.ProductResponse, uint64, error) {
+	index, exists := d.CodeIndex[codeValue]
+	if !exists {
+		return nil, 0, ErrorNonExistentRecord
+	}
+
+	product, exists := d.db[index]
+	if !exists {
+		return nil, 0, ErrorNonExistentRecord
+	}
+
+	productResponse := &models.ProductResponse{
+		Name:        product.Name,
+		Quantity:    product.Quantity,
+		CodeValue:   product.CodeValue,
+		IsPublished: product.IsPublished,
+		Expiration:  product.Expiration,
+		Price:       product.Price,
+	}
+
+	return productResponse, index, nil
+}
+
 // getNextId is used to generate an incremental sequence of ids; just like OracleDB.
 func (d *Data) getNextId() uint64 {
 	d.LastID++
@@ -137,6 +161,41 @@ func (d *Data) PutProduct(product *models.ProductResponse) (*models.ProductRespo
 	existingProduct.IsPublished = product.IsPublished
 	existingProduct.Expiration = product.Expiration
 	existingProduct.Price = product.Price
+	d.db[existingProduct.ID] = existingProduct
+
+	productResponse := &models.ProductResponse{
+		Name:        existingProduct.Name,
+		Quantity:    existingProduct.Quantity,
+		CodeValue:   existingProduct.CodeValue,
+		IsPublished: existingProduct.IsPublished,
+		Expiration:  existingProduct.Expiration,
+		Price:       existingProduct.Price,
+	}
+
+	return productResponse, nil
+}
+
+func (d *Data) PatchProduct(product *models.ProductResponse, id uint64) (*models.ProductResponse, error) {
+	existingProduct, exists := d.db[id]
+	if !exists {
+		return nil, ErrorNonExistentRecord
+	}
+
+	log.Printf("Updating product with ID: %d", id)
+
+	if product.CodeValue != "" && product.CodeValue != existingProduct.CodeValue {
+		log.Printf("Updating CodeValue from '%s' to '%s'", existingProduct.CodeValue, product.CodeValue)
+		delete(d.CodeIndex, existingProduct.CodeValue)
+		d.CodeIndex[product.CodeValue] = existingProduct.ID
+		existingProduct.CodeValue = product.CodeValue
+	}
+
+	existingProduct.Name = product.Name
+	existingProduct.Quantity = product.Quantity
+	existingProduct.IsPublished = product.IsPublished
+	existingProduct.Expiration = product.Expiration
+	existingProduct.Price = product.Price
+
 	d.db[existingProduct.ID] = existingProduct
 
 	productResponse := &models.ProductResponse{

@@ -57,6 +57,7 @@ func (s *Server) setupRoutes() {
 		r.Get("/search", productController.GetProductsByPrice)
 		r.Post("/", productController.CreateProduct)
 		r.Put("/", productController.PutProduct)
+		r.Patch("/", productController.PatchProduct)
 	})
 }
 

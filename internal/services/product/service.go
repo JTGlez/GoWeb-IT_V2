@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/JTGlez/GoWeb-IT_V2/internal/models"
 	"github.com/JTGlez/GoWeb-IT_V2/internal/repository"
+	"reflect"
 )
 
 var (
@@ -28,6 +29,7 @@ type ServiceProductInterface interface {
 	GetProductsByPrice(priceGt float64) ([]*models.ProductResponse, error)
 	CreateProduct(product *models.ProductResponse) (*models.ProductResponse, error)
 	PutProduct(product *models.ProductResponse) (*models.ProductResponse, error)
+	PatchProduct(product *models.ProductResponse) (*models.ProductResponse, error)
 }
 
 func (s serviceProduct) GetProducts() ([]*models.ProductResponse, error) {
@@ -86,4 +88,49 @@ func (s serviceProduct) PutProduct(product *models.ProductResponse) (*models.Pro
 		return nil, err
 	}
 	return updatedProduct, nil
+}
+
+// PatchProduct realiza la actualización parcial de un producto.
+func (s serviceProduct) PatchProduct(product *models.ProductResponse) (*models.ProductResponse, error) {
+	existingProduct, id, err := s.repo.GetFullProductByCodeValue(product.CodeValue)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := mergeStructs(product, existingProduct); err != nil {
+		return nil, err
+	}
+
+	if product.NewCodeValue != "" && product.NewCodeValue != existingProduct.CodeValue {
+		existingProduct.CodeValue = product.NewCodeValue
+	}
+
+	updatedProduct, err := s.repo.PatchProduct(existingProduct, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedProduct, nil
+}
+
+// mergeStructs actualiza los valores de dst con los de src si no son valores por defecto.
+func mergeStructs(src *models.ProductResponse, dst *models.ProductResponse) error {
+	srcVal := reflect.ValueOf(src).Elem()
+	dstVal := reflect.ValueOf(dst).Elem()
+
+	for i := 0; i < srcVal.NumField(); i++ {
+		srcField := srcVal.Field(i)
+		dstField := dstVal.Field(i)
+
+		// Si el valor del campo de src no es el valor por defecto, actualizamos el valor en dst
+		if !isZeroValue(srcField) {
+			dstField.Set(srcField)
+		}
+	}
+	return nil
+}
+
+// isZeroValue determina si un campo tiene el valor por defecto.
+func isZeroValue(v reflect.Value) bool {
+	return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 }

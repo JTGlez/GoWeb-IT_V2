@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	ErrorInvalidID    = errors.New("invalid id input")
-	ErrorInvalidPrice = errors.New("invalid priceGt param")
+	ErrorInvalidID        = errors.New("invalid id input")
+	ErrorInvalidPrice     = errors.New("invalid priceGt param")
+	ErrorMissingCodeValue = errors.New("code_value is required")
 )
 
 type controllerProduct struct {
@@ -22,6 +23,7 @@ type ControllerProductInterface interface {
 	GetProductsByPrice(w http.ResponseWriter, r *http.Request)
 	CreateProduct(w http.ResponseWriter, r *http.Request)
 	PutProduct(w http.ResponseWriter, r *http.Request)
+	PatchProduct(w http.ResponseWriter, r *http.Request)
 }
 
 func NewController(
